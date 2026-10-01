@@ -30,8 +30,8 @@ does. It stores nothing and does not log the body.
    is more than 7 days old or 10 minutes in the future.
 3. **Drops** any field the contract does not list for that event, and any value
    that breaks its rule — a free-text string where an enum is expected, an
-   exception message where only a type name is allowed, a real path where only a
-   route template is allowed.
+   exact count where only a range is allowed, an exception message where only a
+   type name is allowed.
 4. **Forwards** what is left to PostHog, adding `product: node`,
    `component: server` and the batch's `deployment`, with geolocation and person
    profiles disabled. PostHog receives the request from the relay, so it never
@@ -55,3 +55,7 @@ change, or the node's tests fail.
 
 > This repository is private while CueForge is in development, and will be made
 > public before launch.
+
+## Licence
+
+[MIT](./LICENSE), the same as comfyui-mobile-frontend.

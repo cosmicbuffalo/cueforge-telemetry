@@ -30,68 +30,71 @@ anything. It is not a person, a household or a machine:
 
 ## The events
 
+There are only three. Activity is never sent as it happens; it is counted on the
+server and sent as one **hourly summary**, so a busy install calls the relay at
+most about once an hour however much it does.
+
 **`node started`** — once per ComfyUI process start. Restarts, crashes and
 Manager-triggered reboots all count, so this is *process starts*, not uptime and
 not installs. Use it for version, platform and install-source mix, de-duplicated
 by `distinct_id`.
 
-**`frontend opened`** — each full page load of `/mobile/`. Not a session and not
-a person: a browser refresh counts again, the iOS app's web view loads it when it
-opens a server and whenever it reloads, and `share_extension` is the Share
-Sheet's hidden page queueing a shared image, not someone looking at the app.
-In-app navigation does not count, because the frontend is a single page.
+**`hourly summary`** — at most once an hour, and **only for an hour in which
+something happened**: an idle install sends nothing. Every count is a range
+(`0`, `1`, `2-5`, `6-20`, `21-100`, `101+`), never an exact number, so to
+compare installs count summaries per range rather than adding them up.
 
-**`prompt queued`** — every accepted `POST /prompt`, from **any** client: this
-frontend, ComfyUI's own desktop UI, API scripts. `surface` is `ios_app` or
-`share_extension` only when the request carries the CueForge app's user agent;
-everything else is `web`, so `web` overstates use of *this* frontend.
-
-**`prompt finished`** — a run leaving ComfyUI's queue, seen in its history,
-whoever queued it.
-- `status` comes from ComfyUI's own execution messages. A run the user
+- `opens_*_bucket` — full page loads of `/mobile/`, by surface. Not sessions or
+  people: a refresh counts again, the iOS app's web view loads it when it opens a
+  server and whenever it reloads, and `share_extension` is the Share Sheet's
+  hidden page queueing a shared image. In-app navigation does not count.
+- `queued_*_bucket` — accepted `POST /prompt`s, from **any** client, by surface.
+  `ios_app` and `share_extension` only when the request carries the CueForge
+  app's user agent; everything else — this frontend in a browser, ComfyUI's own
+  desktop UI, API scripts — is `web`, so `web` overstates use of *this* frontend.
+- `succeeded_bucket`, `failed_bucket`, `interrupted_bucket` — runs leaving
+  ComfyUI's queue that hour, whoever queued them, by outcome. A run the user
   cancelled is `interrupted`.
-- `duration_bucket` is ComfyUI's execution time, start to finish. Time spent
-  waiting in the queue is not included.
-- `error_class` is the exception's type name only, as ComfyUI reports it.
-- `model_family` is the architecture of the **most recently loaded diffusion
-  model** when the run finished, as ComfyUI's own model detection names it, mapped
-  to a fixed list. It is an approximation: a workflow that uses two diffusion
-  models reports one, and a run that loads no diffusion model (an upscale, a
-  caption) carries none. Anything ComfyUI detects that the list does not name is
-  `other`. It never names the model.
+- `median_duration_bucket` — the median of that hour's run times, as a range.
+  ComfyUI's execution time only; time waiting in the queue is not included.
+- `top_model_family` — the architecture used by the most runs that hour, as
+  ComfyUI's own model detection names it, mapped to a fixed list. Per run it is
+  the most recently loaded diffusion model when the run finished, so a workflow
+  using two diffusion models counts as one, and runs with none (an upscale, a
+  caption) are left out. Never the model's name.
+- `top_error_class` — the exception type that failed the most runs that hour, as
+  ComfyUI reports it. Type name only, never the message.
+- `pushes_delivered_bucket`, `pushes_failed_bucket` — finished runs whose
+  notification reached the relay or the browser's push service, or did not.
+  Delivery to the push service, not proof a notification was shown.
+- `request_failures_bucket` — 5xx answers from the node's own `/mobile` routes.
+  ComfyUI's core routes are not covered, and 4xx is never counted.
 
-**`push dispatched`** — once per finished run, per channel (`app`, `web`), when at
-least one device is paired on that channel. `result` summarises every device:
-`ok` if any received it. It is delivery to the relay or the browser's push service,
-not proof a notification was shown.
-
-**`request failed`** — a 5xx answered by the node's own `/mobile` routes, named by
-route template. ComfyUI's core routes are not covered, and 4xx is never reported.
-
-**`daily summary`** — once a day per install, the day's counts as ranges. The
-counters live in memory, so **a restart loses the day so far**; the first
-summary comes 24 hours after the install id was minted. `days_since_install_bucket`
-counts from the id, so re-enabling telemetry resets it.
+**`daily summary`** — once a day per install, active or not: whether an iOS app
+is paired, and days since the install id was minted (as a range). It is the
+signal that an install is still alive. The first comes 24 hours after the id is
+minted, and re-enabling telemetry resets the count.
 
 ## Losses
 
-Events wait in memory for at most a minute, then go to the relay in batches of up
-to 50. A batch that fails to send is dropped, never retried, and at most 500
-events are held, so a server that is offline for a while, or busier than that per
-minute, under-reports. The relay's rate limits are approximate. Treat every count
-as "at least".
+Counts live in memory until the hour's summary is sent, so **a restart loses the
+hour so far**. A summary that fails to send is dropped, never retried, so a server
+that cannot reach the relay for a while under-reports. The relay's rate limits are
+approximate. Treat every count as "at least".
 
 ## Questions it answers
 
 - **How many installs are live?** Distinct `distinct_id` with a `daily summary` or
-  `node started` in the window.
+  `node started` in the window. **How many are active?** Those with an `hourly
+  summary`.
 - **Which versions are they on?** `node_version` on `node started`, latest per install.
-- **How reliable are generations?** `prompt finished` split by `status`, and
-  `error_class` for what fails most.
-- **What do people run?** `prompt finished` by `model_family`.
-- **App or browser?** `frontend opened` and `prompt queued` by `surface`, with the
-  `web` caveat above.
-- **Do notifications get delivered?** `push dispatched` by `result`.
+- **How reliable are generations?** `failed_bucket` against `succeeded_bucket`
+  across hourly summaries, and `top_error_class` for what fails most.
+- **What do people run?** Hourly summaries by `top_model_family`.
+- **App or browser?** The `opens_*` and `queued_*` ranges, with the `web` caveat
+  above.
+- **Do notifications get delivered?** `pushes_delivered_bucket` against
+  `pushes_failed_bucket`.
 
 ## Questions it cannot answer
 

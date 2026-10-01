@@ -12,7 +12,6 @@ type Rule =
   | { type: 'bucket'; bucket: string }
   | { type: 'version'; also?: string[] }
   | { type: 'type_name' }
-  | { type: 'route' }
   | { type: 'bool' }
   | { type: 'int'; min: number; max: number };
 
@@ -20,7 +19,7 @@ interface Contract {
   version: number;
   deployments: string[];
   limits: { max_events: number; max_body_bytes: number; max_age_seconds: number; max_skew_seconds: number };
-  patterns: Record<'install_id' | 'version' | 'type_name' | 'route', string>;
+  patterns: Record<'install_id' | 'version' | 'type_name', string>;
   buckets: Record<string, string[]>;
   common: Record<string, Rule>;
   events: Record<string, Record<string, Rule>>;
@@ -46,8 +45,6 @@ export function satisfies(rule: Rule, value: unknown): boolean {
         && ((rule.also ?? []).includes(value) || PATTERNS.version.test(value));
     case 'type_name':
       return typeof value === 'string' && PATTERNS.type_name.test(value);
-    case 'route':
-      return typeof value === 'string' && PATTERNS.route.test(value);
     case 'bool':
       return typeof value === 'boolean';
     case 'int':

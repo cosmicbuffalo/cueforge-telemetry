@@ -11,8 +11,7 @@
   "patterns": {
     "install_id": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
     "version": "^\\d{1,4}(\\.\\d{1,4}){0,3}(-[a-z0-9]{1,12})?$",
-    "type_name": "^[A-Za-z_][A-Za-z0-9_]{0,63}$",
-    "route": "^/[A-Za-z0-9_\\-/{}]{0,120}$"
+    "type_name": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"
   },
   "buckets": {
     "count": ["0", "1", "2-5", "6-20", "21-100", "101+"],
@@ -35,44 +34,26 @@
         ] },
       "multiuser": { "type": "bool" }
     },
-    "frontend opened": {
-      "surface": { "type": "enum", "values": [
-          "ios_app", "share_extension", "web", "other"
-        ] }
-    },
-    "prompt queued": {
-      "surface": { "type": "enum", "values": [
-          "ios_app", "share_extension", "web", "other"
-        ] },
-      "batch_bucket": { "type": "bucket", "bucket": "count" }
-    },
-    "prompt finished": {
-      "status": { "type": "enum", "values": [
-          "success", "error", "interrupted"
-        ] },
-      "duration_bucket": { "type": "bucket", "bucket": "duration" },
-      "outputs_bucket": { "type": "bucket", "bucket": "count" },
-      "error_class": { "type": "type_name" },
-      "model_family": { "type": "enum", "values": [
+    "hourly summary": {
+      "opens_ios_app_bucket": { "type": "bucket", "bucket": "count" },
+      "opens_share_extension_bucket": { "type": "bucket", "bucket": "count" },
+      "opens_web_bucket": { "type": "bucket", "bucket": "count" },
+      "queued_ios_app_bucket": { "type": "bucket", "bucket": "count" },
+      "queued_share_extension_bucket": { "type": "bucket", "bucket": "count" },
+      "queued_web_bucket": { "type": "bucket", "bucket": "count" },
+      "succeeded_bucket": { "type": "bucket", "bucket": "count" },
+      "failed_bucket": { "type": "bucket", "bucket": "count" },
+      "interrupted_bucket": { "type": "bucket", "bucket": "count" },
+      "median_duration_bucket": { "type": "bucket", "bucket": "duration" },
+      "top_model_family": { "type": "enum", "values": [
           "sd15", "sd2", "sdxl", "sd3", "stable_cascade", "stable_video", "flux", "flux2", "chroma", "hidream", "qwen_image", "z_image", "lumina", "auraflow", "pixart", "hunyuan_image", "hunyuan_video", "wan", "ltx", "mochi", "cosmos", "cogvideo", "kandinsky", "audio", "3d", "other"
-        ] }
-    },
-    "push dispatched": {
-      "channel": { "type": "enum", "values": [
-          "app", "web", "live_activity"
         ] },
-      "result": { "type": "enum", "values": [
-          "ok", "gone", "muted", "error", "retry"
-        ] }
-    },
-    "request failed": {
-      "route": { "type": "route" },
-      "status": { "type": "int", "min": 400, "max": 599 }
+      "top_error_class": { "type": "type_name" },
+      "pushes_delivered_bucket": { "type": "bucket", "bucket": "count" },
+      "pushes_failed_bucket": { "type": "bucket", "bucket": "count" },
+      "request_failures_bucket": { "type": "bucket", "bucket": "count" }
     },
     "daily summary": {
-      "prompts_bucket": { "type": "bucket", "bucket": "count" },
-      "failures_bucket": { "type": "bucket", "bucket": "count" },
-      "pushes_bucket": { "type": "bucket", "bucket": "count" },
       "paired_app": { "type": "bool" },
       "days_since_install_bucket": { "type": "bucket", "bucket": "days" }
     }
