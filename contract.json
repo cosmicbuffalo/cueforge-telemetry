@@ -1,7 +1,7 @@
 {
   "$comment": "What comfyui-mobile-frontend may send as operational telemetry, and all the CueForge relay will forward. One file, read by both: the relay (src/validate.ts) and the node (a vendored copy, telemetry_contract.json). A field or event not listed here is dropped by both. Patterns are written so JavaScript and Python read them identically.",
   "version": 1,
-  "deployments": ["personal", "review", "prod"],
+  "deployments": ["dev", "review", "prod"],
   "limits": {
     "max_events": 50,
     "max_body_bytes": 32768,

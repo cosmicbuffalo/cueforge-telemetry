@@ -25,7 +25,7 @@ anything. It is not a person, a household or a machine:
 | Filter | Why |
 | --- | --- |
 | `product = node` | the app's own events share the project |
-| `deployment = prod` | `personal` and `review` are our own servers (the project's test-account filter excludes them) |
+| `deployment = prod` | `dev` and `review` are our own servers (the project's test-account filter excludes them) |
 | `measurement_version = 1` | a future change to how anything is counted bumps this; never mix versions in one trend |
 
 ## The events

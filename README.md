@@ -25,7 +25,7 @@ does. It stores nothing and does not log the body.
 ## What the relay does with a batch
 
 1. **Refuses** it outright unless `install_id` is a random UUIDv4, `deployment`
-   is `personal`, `review` or `prod`, and it holds 1–50 events in at most 32 KB.
+   is `dev`, `review` or `prod`, and it holds 1–50 events in at most 32 KB.
 2. **Drops** any event whose name is not in `contract.json`, or whose timestamp
    is more than 7 days old or 10 minutes in the future.
 3. **Drops** any field the contract does not list for that event, and any value
