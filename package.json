@@ -1,0 +1,20 @@
+{
+  "name": "cueforge-telemetry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The telemetry contract between comfyui-mobile-frontend and the CueForge relay, and what the relay does with a batch.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contract.json": "./contract.json"
+  },
+  "files": ["src/index.ts", "contract.json"],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.10"
+  }
+}
