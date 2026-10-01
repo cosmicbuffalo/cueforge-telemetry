@@ -25,25 +25,45 @@
   },
   "events": {
     "node started": {
-      "platform": { "type": "enum", "values": ["linux", "windows", "darwin", "other"] },
+      "platform": { "type": "enum", "values": [
+          "linux", "windows", "darwin", "other"
+        ] },
       "python_version": { "type": "version" },
       "comfyui_version": { "type": "version", "also": ["unknown"] },
-      "install_source": { "type": "enum", "values": ["registry", "manager", "git", "other"] },
+      "install_source": { "type": "enum", "values": [
+          "registry", "manager", "git", "other"
+        ] },
       "multiuser": { "type": "bool" }
     },
+    "frontend opened": {
+      "surface": { "type": "enum", "values": [
+          "ios_app", "share_extension", "web", "other"
+        ] }
+    },
     "prompt queued": {
-      "surface": { "type": "enum", "values": ["ios_app", "web", "other"] },
+      "surface": { "type": "enum", "values": [
+          "ios_app", "share_extension", "web", "other"
+        ] },
       "batch_bucket": { "type": "bucket", "bucket": "count" }
     },
     "prompt finished": {
-      "status": { "type": "enum", "values": ["success", "error", "interrupted"] },
+      "status": { "type": "enum", "values": [
+          "success", "error", "interrupted"
+        ] },
       "duration_bucket": { "type": "bucket", "bucket": "duration" },
       "outputs_bucket": { "type": "bucket", "bucket": "count" },
-      "error_class": { "type": "type_name" }
+      "error_class": { "type": "type_name" },
+      "model_family": { "type": "enum", "values": [
+          "sd15", "sd2", "sdxl", "sd3", "stable_cascade", "stable_video", "flux", "flux2", "chroma", "hidream", "qwen_image", "z_image", "lumina", "auraflow", "pixart", "hunyuan_image", "hunyuan_video", "wan", "ltx", "mochi", "cosmos", "cogvideo", "kandinsky", "audio", "3d", "other"
+        ] }
     },
     "push dispatched": {
-      "channel": { "type": "enum", "values": ["app", "web", "live_activity"] },
-      "result": { "type": "enum", "values": ["ok", "gone", "muted", "error", "retry"] }
+      "channel": { "type": "enum", "values": [
+          "app", "web", "live_activity"
+        ] },
+      "result": { "type": "enum", "values": [
+          "ok", "gone", "muted", "error", "retry"
+        ] }
     },
     "request failed": {
       "route": { "type": "route" },

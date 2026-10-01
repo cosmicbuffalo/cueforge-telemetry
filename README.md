@@ -16,6 +16,7 @@ part of it that handles telemetry, published on its own.
 | [`contract.json`](./contract.json) | Every event the node may send, every field each may carry, and the allowed values or pattern for each field. **Anything not listed is dropped.** |
 | [`src/index.ts`](./src/index.ts) | `validateBatch` and `forwardToPostHog`: the relay's whole handling of a batch. |
 | [`src/index.test.ts`](./src/index.test.ts) | What is kept, what is dropped, and what is refused outright. |
+| [`TELEMETRY.md`](./TELEMETRY.md) | What each event and number means in PostHog, and what it cannot tell you. |
 
 The relay's `/telemetry/batch` route calls `validateBatch` on the request body,
 answers `202`, then calls `forwardToPostHog` with the result. That is all it

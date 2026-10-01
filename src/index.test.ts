@@ -83,6 +83,18 @@ describe('validateBatch', () => {
   });
 });
 
+describe('model_family', () => {
+  it('passes an architecture and refuses a filename, hash or AIR', () => {
+    const props = (model_family: string) => validateBatch(batch([{
+      event: 'prompt finished', timestamp: at(), properties: { status: 'success', model_family },
+    }]), NOW)?.events[0].properties.model_family;
+    expect(props('sdxl')).toBe('sdxl');
+    expect(props('some_model.safetensors')).toBeUndefined();
+    expect(props('6ce0161689b3853acaa03779ec93eafe75a02f4ced659bee03f50797806fa2fa')).toBeUndefined();
+    expect(props('urn:air:sdxl:checkpoint:civitai:101055@128078')).toBeUndefined();
+  });
+});
+
 describe('postHogBatch', () => {
   it('tags node events and keeps PostHog from building people or places', () => {
     const valid = validateBatch(batch([
