@@ -16,7 +16,7 @@ describe('validateBatch', () => {
   it('keeps allowed properties and drops everything else', () => {
     expect(hourly({
       succeeded_bucket: '6-20',
-      failed_bucket: '1',
+      failed_bucket: '1-2',
       median_duration_bucket: '10-30s',
       top_error_class: 'OutOfMemoryError',
       node_version: '3.3.6',
@@ -25,7 +25,7 @@ describe('validateBatch', () => {
       server_url: 'http://192.168.1.76:8188', // not in the contract
     })).toEqual({
       succeeded_bucket: '6-20',
-      failed_bucket: '1',
+      failed_bucket: '1-2',
       median_duration_bucket: '10-30s',
       top_error_class: 'OutOfMemoryError',
       node_version: '3.3.6',
@@ -36,6 +36,7 @@ describe('validateBatch', () => {
   it('drops a property whose value breaks its rule, not just an unknown key', () => {
     expect(hourly({
       succeeded_bucket: '12',                         // an exact count, not a range
+      failed_bucket: '1',                             // a single exact count is not a range either
       top_error_class: 'ValueError: bad prompt text', // a message, not a type name
       median_duration_bucket: '12s',                  // not a range
       node_version: 'latest',                         // not a version

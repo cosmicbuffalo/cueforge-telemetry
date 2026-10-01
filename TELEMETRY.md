@@ -41,7 +41,7 @@ by `distinct_id`.
 
 **`hourly summary`** — at most once an hour, and **only for an hour in which
 something happened**: an idle install sends nothing. Every count is a range
-(`0`, `1`, `2-5`, `6-20`, `21-100`, `101+`), never an exact number, so to
+(`0`, `1-2`, `3-5`, `6-20`, `21-100`, `101+`), never an exact number, so to
 compare installs count summaries per range rather than adding them up.
 
 - `opens_*_bucket` — full page loads of `/mobile/`, by surface. Not sessions or
